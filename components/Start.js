@@ -6,6 +6,7 @@ const Start = ({ navigation }) => {
   const auth = getAuth();
   const [name, setName] = useState('');
   const [color, setColor] = useState('');
+  
   const signInUser = () => {
     signInAnonymously(auth)
       .then(result => {
@@ -63,7 +64,7 @@ const Start = ({ navigation }) => {
               // double check this code - trying to add the signInUser function to the onPress
               // might need to pass the user's name and selected background color here
               onPress={signInUser}>
-                Log In
+                Log In to Start Chatting
               </Text>
               </TouchableOpacity>
             </View>
