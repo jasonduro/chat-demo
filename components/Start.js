@@ -1,10 +1,26 @@
+import { getAuth, signInAnonymously } from "firebase/auth";
 import { useState } from 'react';
-import { StyleSheet, View, Text, Button, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Button, TextInput, ImageBackground, TouchableOpacity, Alert } from 'react-native';
 
 const Start = ({ navigation }) => {
+  const auth = getAuth();
   const [name, setName] = useState('');
   const [color, setColor] = useState('');
-
+  const signInUser = () => {
+    signInAnonymously(auth)
+      .then(result => {
+        // Might need to pass the user's name and selected background color here
+        navigation.navigate('Chat', { userID: result.user.uid, name: name, color: color });
+        Alert.alert("Signed in successfully!");
+      })
+      .catch(error => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        Alert.alert("Error signing in", errorMessage);
+        console.log(errorCode, errorMessage);
+      });
+  }
+  
   const backgroundColors = ['#090C08', '#474056', '#8A95A5', '#B9C6AE'];
 
   return (  
@@ -44,14 +60,16 @@ const Start = ({ navigation }) => {
         
               <TouchableOpacity style={[styles.chatButton]}> 
               <Text 
-              onPress={() => navigation.navigate('Chat', { name: name, color: color })}>
-                Start Chatting
+              // double check this code - trying to add the signInUser function to the onPress
+              // might need to pass the user's name and selected background color here
+              onPress={signInUser}>
+                Log In
               </Text>
               </TouchableOpacity>
             </View>
         </View>
     </ImageBackground>
- );
+ )
 }
 
 const styles = StyleSheet.create({
