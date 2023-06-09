@@ -84,30 +84,31 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     color: '#757083',
     opacity: 50,
-    width: "88%",
-    padding: 15,
+    width: "100%",
+    padding: 16,
     borderWidth: 1,
-    marginTop: 15,
-    marginBottom: 15
+    marginTop: 16,
+    marginBottom: 16
   },
   title: {
     color: '#FFFFFF',
     fontSize: 45,
     fontWeight: '600',
+    marginBottom: 10,
   },
   colorSelect: {
     width: "88%",
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    marginBottom: 15,
+    marginBottom: 16,
     borderWidth: 1,
-    padding: 15,
+    padding: 16,
     backgroundColor: '#FFFFFF',
   },
   colorSelectText: {
     fontSize: 16,
-    fontWeight: '300',
+    fontWeight: '600',
     color: '#757083',
     opacity: 100,
     marginBottom: 10
@@ -129,10 +130,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF',
     backgroundColor: '#757083',
-    width: "88%",
-    padding: 15,
+    width: "100%",
+    padding: 16,
     borderWidth: 1,
-    margin: 15
+    margin: 16
   }
 });
  

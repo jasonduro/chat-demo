@@ -1,4 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useNetInfo } from '@react-native-community/netinfo';
+import { useEffect } from 'react';
+
+import { StyleSheet, Alert } from 'react-native';
 // import the screens
 import Start from './components/Start';
 import Chat from './components/Chat';
@@ -11,10 +14,20 @@ const Stack = createNativeStackNavigator();
 
 // iniltialize a connection to firebase
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, disableNetwork, enableNetwork } from 'firebase/firestore';
 
 
 const App = () => {
+  const connectionStatus = useNetInfo();
+  
+  useEffect(() => {
+    if (connectionStatus.isConnected === false) {
+      Alert.alert("No internet connection");
+    disableNetwork(db);
+  } else if (connectionStatus.isConnected === true) {
+    enableNetwork(db);
+  }
+  }, [connectionStatus.isConnected]);
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -39,7 +52,7 @@ const db = getFirestore(app);
           component={Start}
         />
         <Stack.Screen name="Chat">
-          {(props) => <Chat {...props} db={db} />}
+          {(props) => <Chat isConnected={connectionStatus.isConnected} {...props} db={db} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
