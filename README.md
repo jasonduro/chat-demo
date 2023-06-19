@@ -1,4 +1,4 @@
-# Mobile Chat App
+# React Native Chat App
 
 This is a native mobile chat app built with React and React Native. The app allows users to chat in real-time, send images, and share their location.
 
