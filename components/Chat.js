@@ -3,21 +3,23 @@ import { useEffect, useState } from 'react';
 import { Bubble, GiftedChat, InputToolbar } from 'react-native-gifted-chat';
 import { StyleSheet, View, Text, KeyboardAvoidingView, Platform } from 'react-native';
 import { collection, addDoc, onSnapshot, query, orderBy, Timestamp } from "firebase/firestore";
+import CustomActions from './CustomActions';
+import MapView from 'react-native-maps';
 
-const Chat = ({ db, route, navigation, isConnected }) => {
+const Chat = ({ db, route, navigation, isConnected, storage }) => {
   const { name, color, userID } = route.params;
   const [messages, setMessages] = useState([]);
 
   let unsubMessages;
 
   useEffect(() => {
+    navigation.setOptions({ title: name });
+
     if (isConnected === true ) {
       // unregister current onSnapshot() listener to avoid registering multiple listeners when
       // useEffect code is re-executed.
       if (unsubMessages) unsubMessages();
       unsubMessages = null;
-
-    navigation.setOptions({ title: name });
     
     const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
     unsubMessages = onSnapshot(q, (docs) => {
@@ -34,7 +36,6 @@ const Chat = ({ db, route, navigation, isConnected }) => {
     })
   } else loadCachedMessages();
 
-    //clean up code
     return () => {
       if (unsubMessages) unsubMessages();
     }
@@ -57,29 +58,50 @@ const Chat = ({ db, route, navigation, isConnected }) => {
     addDoc(collection(db, "messages"), newMessages[0])
   }
 
-  const renderInputToolbar = (props) => {
-    if (isConnected === true) return <InputToolbar {...props} />;
-    else return null;
-  }
+    const renderInputToolbar = (props) => {
+      if (isConnected === true) return <InputToolbar {...props} />;
+      else return null;
+    }
 
-  const renderBubble = (props) => {
-    return <Bubble
-      {...props}
-      wrapperStyle={{
-        right: {
-          backgroundColor: '#000'
-        },
-        left: {
-          backgroundColor: '#fff'
-        }
-      }}
-    />
-  }
+    const renderBubble = (props) => {
+      return <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: '#000'
+          },
+          left: {
+            backgroundColor: '#fff'
+          }
+        }}
+      />
+    }
 
+    const renderCustomActions = (props) => {
+      return <CustomActions userID={userID} storage={storage} {...props} />;
+    };
 
-  useEffect(() => {
-    navigation.setOptions({ title: name });
-  }, []);
+    const renderCustomView = (props) => {
+      const { currentMessage} = props;
+      if (currentMessage.location) {
+        return (
+            <MapView
+              style={{width: 150,
+                height: 100,
+                borderRadius: 13,
+                margin: 3}}
+              region={{
+                latitude: currentMessage.location.latitude,
+                longitude: currentMessage.location.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+            />
+        );
+      }
+      return null;
+    }
+
   
  return (
   <View style={{flex: 1, backgroundColor: color}}>
@@ -88,6 +110,8 @@ const Chat = ({ db, route, navigation, isConnected }) => {
         renderBubble={renderBubble}
         renderInputToolbar={renderInputToolbar}
         onSend={(messages) => onSend(messages)}
+        renderActions={renderCustomActions}
+        renderCustomView={renderCustomView}
         user={{
           _id: userID, 
           name: name,
