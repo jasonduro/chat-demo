@@ -1,14 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { Bubble, GiftedChat, InputToolbar } from 'react-native-gifted-chat';
-import { StyleSheet, View, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, View, Text, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
 import { collection, addDoc, onSnapshot, query, orderBy, Timestamp } from "firebase/firestore";
 import CustomActions from './CustomActions';
 import MapView from 'react-native-maps';
+import { Audio } from 'expo-av';
 
 const Chat = ({ db, route, navigation, isConnected, storage }) => {
   const { name, color, userID } = route.params;
   const [messages, setMessages] = useState([]);
+  let soundObject = null;
 
   let unsubMessages;
 
@@ -38,6 +40,7 @@ const Chat = ({ db, route, navigation, isConnected, storage }) => {
 
     return () => {
       if (unsubMessages) unsubMessages();
+      if (soundObject) soundObject.unloadAsync();
     }
    }, [isConnected]);
 
@@ -102,6 +105,34 @@ const Chat = ({ db, route, navigation, isConnected, storage }) => {
       return null;
     }
 
+    const renderAudioBubble = (props) => {
+      return <View {...props}>
+       <TouchableOpacity
+          style={{ backgroundColor: "#FF0", borderRadius: 10, margin: 5 }}
+          onPress={async() => {
+            const { sound } = await Audio.Sound.createAsync({ uri: props.currentMessage.audio });
+            await sound.playAsync();
+        }}>
+          <Text style={{ textAlign: "center", color: 'black', padding: 5 }}>Play Sound</Text>
+        </TouchableOpacity>
+      </View>
+    }
+
+    const renderMessageAudio = (props) => {
+      return <View {...props}>
+      <TouchableOpacity
+        style={{ backgroundColor: "#FF0", borderRadius: 10, margin: 5 }}
+        onPress={async () => {
+          if (soundObject) soundObject.unloadAsync();
+          const { sound } = await Audio.Sound.createAsync({ uri: props.currentMessage.audio });
+          soundObject = sound;
+          await sound.playAsync();
+        }}>
+        <Text style={{ textAlign: "center", color: 'black', padding: 5 }}>Play Sound</Text>
+      </TouchableOpacity>
+      </View>
+      }
+
   
  return (
   <View style={{flex: 1, backgroundColor: color}}>
@@ -112,6 +143,7 @@ const Chat = ({ db, route, navigation, isConnected, storage }) => {
         onSend={(messages) => onSend(messages)}
         renderActions={renderCustomActions}
         renderCustomView={renderCustomView}
+        renderMessageAudio={renderAudioBubble}
         user={{
           _id: userID, 
           name: name,
