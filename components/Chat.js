@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { Bubble, GiftedChat, InputToolbar } from 'react-native-gifted-chat';
-import { StyleSheet, View, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Button, KeyboardAvoidingView, Platform } from 'react-native';
 import { collection, addDoc, onSnapshot, query, orderBy, Timestamp } from "firebase/firestore";
 import CustomActions from './CustomActions';
 import MapView from 'react-native-maps';
@@ -101,8 +101,8 @@ const Chat = ({ db, route, navigation, isConnected, storage }) => {
       }
       return null;
     }
-
   
+
  return (
   <View style={{flex: 1, backgroundColor: color}}>
     <GiftedChat
